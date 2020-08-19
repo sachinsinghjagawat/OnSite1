@@ -3,6 +3,7 @@ package com.example.onsite1;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
 
+import android.content.Context;
 import android.graphics.Path;
 import android.os.Bundle;
 
@@ -19,11 +20,18 @@ public class Fragment2 extends Fragment {
 
     private Fragment1ViewModel mViewModel;
     FrameLayout drawView;
-    MyCanvas myCanvas;
+    public static MyCanvas myCanvas;
+    Fragment2Listener listener;
+
 
     public static Fragment2 newInstance() {
         return new Fragment2();
     }
+
+    public interface Fragment2Listener {
+        void sendPath2 (Path path);
+    }
+
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
@@ -40,11 +48,31 @@ public class Fragment2 extends Fragment {
         myCanvas = new MyCanvas(this.getContext());
         drawView.addView(myCanvas);
 
-        try {
+        listener.sendPath2(myCanvas.getPath());
+
+ /*       try {
             mViewModel.setPath(myCanvas.getPath());
         }catch (Exception e){
             e.printStackTrace(); // at the starting of the app null pointer exception is coming !!
         }
+  */
+    }
+
+    public static void updatePath2(Path path) {
+        myCanvas.setPath(path);
+    }
+
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        if (context instanceof Fragment1.Fragment1Listener) {
+            listener = (Fragment2Listener) context;
+        }
+    }
+    @Override
+    public void onDetach() {
+        super.onDetach();
+        listener = null;
     }
 
     @Override
@@ -52,13 +80,14 @@ public class Fragment2 extends Fragment {
         super.onActivityCreated(savedInstanceState);
         mViewModel = ViewModelProviders.of(this).get(Fragment1ViewModel.class);
         // TODO: Use the ViewModel
-        mViewModel.getPath().observe(getViewLifecycleOwner(), new Observer<Path>() {
+/*        mViewModel.getPath().observe(getViewLifecycleOwner(), new Observer<Path>() {
             @Override
             public void onChanged(Path path) {
                 myCanvas.setPath(path);
                 myCanvas.invalidate();
             }
         });
+ */
 
     }
 
